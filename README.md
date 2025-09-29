@@ -7,6 +7,8 @@ Draco is an open-source library for compressing and decompressing 3D geometric m
 **3D Rendering:[Three.js] is the core engine, responsible for rendering the entire 3D scene, including the room model, lighting, and textures.
 **Animations: The [GreenSock Animation Platform (GSAP)] was used to choreograph all the animations, from the smooth camera movements tied to the scrollbar to the subtle interactive effects.
 **Build Tool:[Vite] provided a lightning-fast development environment and an optimized build process for production.
+Deployment: The site is hosted on GitHub Pages
+
 
 
 ## Contents
