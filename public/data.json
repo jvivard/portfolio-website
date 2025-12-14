@@ -11,6 +11,13 @@
         "shortDescription": "AI Co-Pilot for Smarter Grading.",
         "fullDescription": "An intelligent grading system that automates the assessment of student worksheets using OCR, NLP, and AI-powered evaluation to provide accurate, consistent, and detailed feedback on student work.",
         "thumbnail": "textures/polaris.png",
+        "highlights": [
+            "textures/stage.jpg",
+            "textures/Top.jpg",
+            "textures/mockup.png",
+            "textures/mockup.png"
+        ],
+        "myExperience": "Startups are often chaotic, but that’s where the magic happens. I built the initial MVP in just 48 hours for a hackathon, learning how to prioritize core features over perfection. Working with AI models taught me the importance of prompt engineering and handling edge cases in OCR.",
         "gallery": [],
         "techStack": [
             "React",
@@ -32,12 +39,20 @@
         "shortDescription": "An AI-powered assessment preparation platform",
         "fullDescription": "Intervoice is an AI-powered assessment preparation platform that uses 6 specialized AI agents to help you ace job interviews.",
         "thumbnail": "textures/accel.jpg",
+        "highlights": [
+            "textures/accel1.jpg",
+            "textures/Intervoice (1).png",
+            "textures/Intervoice (2).png",
+            "textures/Intervoice (3).png",
+            "textures/Intervoice (4).png"
+        ],
+        "myExperience": "Building a multi-agent system was a complex challenge. I learned how to orchestrate communication between different AI personas to create a cohesive interview experience. Managing state across 6 different agents required a robust backend architecture.",
         "gallery": [],
         "techStack": [
-            "Roadmapping",
-            "sprint planning",
-            "Workflow Streamlining",
-            ""
+            "claude",
+            "flutter",
+            "Websocket",
+            "Tavily"
         ],
         "link": "https://github.com/jvivard/intervoice"
     },
@@ -52,12 +67,19 @@
         "shortDescription": "AI content platform",
         "fullDescription": "Stellara is a decentralized AI content platform built on Cardano. It allows users to subscribe to autonomous AI influencers using ADA.",
         "thumbnail": "textures/cardano.jpg",
+        "highlights": [
+            "textures/cardano (1).png",
+            "textures/cardano (2).png",
+            "textures/cardano (3).png",
+            "textures/cardano (4).jpg"
+        ],
+        "myExperience": "This was my deep dive into Web3. Integrating Cardano wallets and smart contracts with a traditional web frontend was a steep learning curve. I gained a deep appreciation for decentralized identity and tokenomics.",
         "gallery": [],
         "techStack": [
-            "Roadmapping",
-            "sprint planning",
-            "Workflow Streamlining",
-            ""
+            "Nami",
+            "CardanoStack",
+            "Smart Contracts",
+            "Aiken"
         ],
         "link": "https://github.com/jvivard/Stellara"
     }

@@ -138,50 +138,84 @@
 
     <!-- Project Wall Overlay -->
     <section id="project-details" class="project-details">
-      <div class="project-details__content">
-        <header class="project-details__header">
-          <button id="close-project-btn" class="nav-btn">
+      <!-- Navigation Header (Moved outside content for fixed positioning) -->
+      <header class="project-details__header">
+        <button id="close-project-btn" class="nav-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 96 960 960">
+            <path d="m313 576 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z" />
+          </svg>
+          Back
+        </button>
+        <div class="project-navigation">
+          <button id="next-project-btn" class="nav-btn">
+            Next Project
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 96 960 960">
-              <path d="m313 576 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z" />
+              <path d="M647 576H160v-80h487L423 272l57-56 320 320-320 320-57-56 224-224Z" />
             </svg>
-            Back
           </button>
-          <div class="project-navigation">
-            <button id="next-project-btn" class="nav-btn">
-              Next Project
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 96 960 960">
-                <path d="M647 576H160v-80h487L423 272l57-56 320 320-320 320-57-56 224-224Z" />
-              </svg>
-            </button>
-          </div>
-        </header>
+        </div>
+      </header>
 
+      <div class="project-details__content">
         <div class="bento-grid">
-          <div class="bento-item title-card">
-            <span id="project-label" class="project-id-label">Project</span>
-            <h2 id="project-title">Project Name</h2>
-            <p id="project-short-desc">Short description of the project.</p>
-            <div id="project-tech-stack" class="tech-tags"></div>
+          <!-- Left Column (3 Boxes) -->
+          <div class="col-left">
+            <!-- 1. Title/Header Card -->
+            <div class="bento-item title-card">
+              <span id="project-label" class="project-id-label">Project</span>
+              <h2 id="project-title">Project Name</h2>
+              <div id="project-tech-stack" class="tech-tags"></div>
+            </div>
+
+            <!-- 2. Overview Card (Description + Link) -->
+            <div class="bento-item overview-card">
+              <h3>Overview</h3>
+              <p id="project-short-desc">Short description of the project.</p>
+              <a id="project-link" href="#" target="_blank" class="action-btn">
+                Visit Project
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 96 960 960">
+                  <path
+                    d="M200 856q-33 0-56.5-23.5T120 776V256q0-33 23.5-56.5T200 176h320v80H200v520h560V456h80v320q0 33-23.5 56.5T760 856H200Zm320-320L464 480 664 280H560v-80h240v240h-80v-104L520 536Z" />
+                </svg>
+              </a>
+            </div>
+
+            <!-- 3. What is Built Card (Full Description) -->
+            <div class="bento-item build-card">
+              <h3>What is Built</h3>
+              <p id="project-full-desc">Detailed project description goes here.</p>
+            </div>
           </div>
 
-          <div class="bento-item main-image-card">
-            <img id="project-main-img" src="" alt="Project Preview" />
-          </div>
+          <!-- Right Column (2 Boxes) -->
+          <div class="col-right">
+            <!-- 1. Highlights Gallery -->
+            <div class="bento-item gallery-card">
+              <h3>View Highlights</h3>
+              <div id="project-gallery-grid" class="gallery-grid">
+                <!-- Thumbnails will be injected here -->
+              </div>
+            </div>
 
-          <div class="bento-item description-card">
-            <h3>Overview</h3>
-            <p id="project-full-desc">Detailed project description goes here.</p>
-            <a id="project-link" href="#" target="_blank" class="action-btn">
-              Visit Project
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 96 960 960">
-                <path
-                  d="M200 856q-33 0-56.5-23.5T120 776V256q0-33 23.5-56.5T200 176h320v80H200v520h560V456h80v320q0 33-23.5 56.5T760 856H200Zm320-320L464 480 664 280H560v-80h240v240h-80v-104L520 536Z" />
-              </svg>
-            </a>
+            <!-- 2. Experience Card -->
+            <div class="bento-item experience-card">
+              <h3>My Experience</h3>
+              <p id="project-experience">Experience details...</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="lightbox">
+      <button id="lightbox-close" class="lightbox-close">&times;</button>
+      <div class="lightbox-content">
+        <button id="lightbox-prev" class="lightbox-nav prev">&#10094;</button>
+        <img id="lightbox-img" src="" alt="Highlight">
+        <button id="lightbox-next" class="lightbox-nav next">&#10095;</button>
+      </div>
+    </div>
   </main>
   <footer>Designed & developed by <a href="#">J Vishnu Vardhan</a></footer>
   <script type="module" src="/main.js"></script>

@@ -409,27 +409,28 @@ footer {
   }
 }
 
-/* Project Wall Overlay */
+/* Project Details Overlay with 3L-2R Grid */
 .project-details {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1000;
-  /* Cream background as requested */
-  background: #fcfbf4;
+  width: 100%;
+  height: 100%;
+  background: rgba(240, 240, 243, 0.98);
+  backdrop-filter: blur(20px);
+  z-index: 100;
+  overflow-y: auto;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.5s ease;
-  overflow-y: auto;
   display: flex;
   justify-content: center;
+  align-items: flex-start;
   padding: 40px 20px;
 }
 
 .dark-theme .project-details {
-  background: rgba(18, 18, 18, 0.95);
+  background: rgba(18, 18, 18, 0.98);
 }
 
 .project-details.active {
@@ -439,23 +440,53 @@ footer {
 
 .project-details__content {
   width: 100%;
-  max-width: 1000px;
-  position: relative;
+  max-width: 900px;
+  /* Reduced from 1200px to make boxes narrower/more vertical */
+  margin-top: 60px;
+  /* Increased margin to account for scale */
+  transform: scale(1.15);
+  /* The "Zooming" effect */
+  transform-origin: top center;
 }
 
-/* Header & Nav */
 .project-details__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  /* Don't block clicks */
+  z-index: 200;
+  /* Above scaled content */
+  pointer-events: none;
+  /* Let clicks pass through empty space */
 }
 
+/* Individual Buttons - Enable clicks & positioning */
+#close-project-btn {
+  position: fixed;
+  top: 40px;
+  left: 40px;
+  pointer-events: auto;
+  z-index: 201;
+}
+
+.project-navigation {
+  position: fixed;
+  top: 40px;
+  right: 40px;
+  pointer-events: auto;
+  z-index: 201;
+}
+
+/* Restored Rounded/Pill Buttons */
 .nav-btn {
-  background: rgba(255, 255, 255, 0.8);
+  background: white;
+  /* Ensure visible background */
   border: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 10px 20px;
-  border-radius: 30px;
+  padding: 10px 24px;
+  border-radius: 50px;
+  /* High radius for pill shape */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -464,7 +495,8 @@ footer {
   font-weight: 500;
   color: var(--color-text);
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  /* Soft shadow */
 }
 
 .dark-theme .nav-btn {
@@ -474,27 +506,52 @@ footer {
 
 .nav-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  background: var(--color-text);
+  color: var(--color-background);
 }
 
 .nav-btn svg {
   fill: currentColor;
 }
 
-/* Bento Grid Layout */
+/* 2-Column Layout */
 .bento-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 20px;
-  width: 100%;
 }
 
+@media (min-width: 992px) {
+  .bento-grid {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .col-left {
+    flex: 3;
+    /* 60% approx type width */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .col-right {
+    flex: 2;
+    /* 40% approx type width */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+/* Card Styles */
 .bento-item {
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 24px;
+  background: #ffffff;
+  border-radius: 20px;
   padding: 30px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease;
 }
 
@@ -507,12 +564,15 @@ footer {
   transform: translateY(-5px);
 }
 
-/* Specific Cards */
-.title-card {
-  grid-column: 1 / 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+/* ----- Left Column Cards ----- */
+
+/* 1. Title Card */
+.title-card h2 {
+  font-family: 'Chewy', cursive;
+  font-size: 3rem;
+  margin-bottom: 20px;
+  line-height: 1.1;
+  color: #6b4c3a;
 }
 
 .project-id-label {
@@ -521,45 +581,58 @@ footer {
   letter-spacing: 2px;
   opacity: 0.6;
   margin-bottom: 10px;
+  display: block;
 }
 
-.title-card h2 {
-  font-family: 'Chewy', cursive;
-  font-size: 3rem;
-  /* Increased size for impact */
-  margin-bottom: 20px;
-  line-height: 1.1;
-  color: #6b4c3a;
+/* 2. Overview Card */
+.overview-card h3,
+.build-card h3,
+.gallery-card h3,
+.experience-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  opacity: 0.9;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.title-card p {
-  opacity: 0.8;
-  margin-bottom: 20px;
+/* 3. Build Card */
+.build-card p {
+  line-height: 1.6;
 }
 
-.main-image-card {
-  grid-column: 2 / 3;
-  grid-row: 1 / 3;
-  padding: 0;
-  overflow: hidden;
-  height: 400px;
+/* ----- Right Column Cards ----- */
+
+/* 1. Gallery Card */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
 }
 
-.main-image-card img {
+.gallery-thumb {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: filter 0.3s ease, transform 0.3s ease;
 }
 
-.main-image-card:hover img {
-  transform: scale(1.05);
+.gallery-thumb:hover {
+  filter: brightness(0.8);
+  transform: scale(1.02);
 }
 
-.description-card {
-  grid-column: 1 / 2;
+/* 2. Experience Card */
+.experience-card p {
+  line-height: 1.6;
+  font-style: italic;
+  opacity: 0.9;
 }
 
+/* Tech Tags */
 .tech-tags {
   display: flex;
   flex-wrap: wrap;
@@ -578,12 +651,13 @@ footer {
   background: rgba(255, 255, 255, 0.1);
 }
 
+/* Action Button */
 .action-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 20px;
-  padding: 12px 24px;
+  margin-top: 15px;
+  padding: 10px 20px;
   background: var(--color-text);
   color: var(--color-background);
   text-decoration: none;
@@ -598,6 +672,81 @@ footer {
 
 .action-btn:hover {
   opacity: 0.8;
+}
+
+
+/* Lightbox Modal */
+.lightbox {
+  display: none;
+  position: fixed;
+  z-index: 200;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lightbox.active {
+  display: flex;
+  opacity: 1;
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  display: flex;
+  align-items: center;
+}
+
+#lightbox-img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.lightbox-close:hover,
+.lightbox-close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lightbox-nav {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 50%;
+  margin: 0 20px;
+  transition: background 0.3s;
+}
+
+.lightbox-nav:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Mobile Responsive */

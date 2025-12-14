@@ -856,19 +856,102 @@ function updateProjectDetailsUI(index) {
   document.getElementById('project-label').textContent = project.label || 'PROJECT';
   document.getElementById('project-short-desc').textContent = project.shortDescription;
   document.getElementById('project-full-desc').textContent = project.fullDescription;
-  document.getElementById('project-main-img').src = project.thumbnail;
   document.getElementById('project-link').href = project.link;
+
+  // New Field: Experience
+  const expElement = document.getElementById('project-experience');
+  if (expElement) {
+    expElement.textContent = project.myExperience || "Experience details coming soon.";
+  }
 
   // Tech Stack
   const techContainer = document.getElementById('project-tech-stack');
   techContainer.innerHTML = '';
-  project.techStack.forEach(tech => {
-    const span = document.createElement('span');
-    span.className = 'tech-tag';
-    span.textContent = tech;
-    techContainer.appendChild(span);
+  if (project.techStack) {
+    project.techStack.forEach(tech => {
+      const span = document.createElement('span');
+      span.className = 'tech-tag';
+      span.textContent = tech;
+      techContainer.appendChild(span);
+    });
+  }
+
+  // Render Gallery
+  renderGallery(project.highlights || []);
+}
+
+// Gallery Logic
+let currentLightboxIndex = 0;
+let currentProjectImages = [];
+
+function renderGallery(images) {
+  const galleryGrid = document.getElementById('project-gallery-grid');
+  galleryGrid.innerHTML = '';
+  currentProjectImages = images;
+
+  // We want a 2x2 grid (4 items). 
+  // If fewer images, we can repeat or show placeholders to maintain layout? 
+  // For now, let's just show what we have. 
+  // Ideally user provides 4 images.
+
+  // Limit to 4 for the box view or show all? 
+  // Design said 4 boxes. Let's show up to 4.
+  const displayImages = images.slice(0, 4);
+
+  displayImages.forEach((src, idx) => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.className = 'gallery-thumb';
+    img.alt = `Highlight ${idx + 1}`;
+    img.onclick = () => openLightbox(idx);
+    galleryGrid.appendChild(img);
   });
 }
+
+// Lightbox Logic
+const lightbox = document.getElementById('lightbox-modal');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxClose = document.getElementById('lightbox-close');
+const lightboxNext = document.getElementById('lightbox-next');
+const lightboxPrev = document.getElementById('lightbox-prev');
+
+function openLightbox(index) {
+  if (currentProjectImages.length === 0) return;
+  currentLightboxIndex = index;
+  updateLightboxImage();
+  lightbox.classList.add('active');
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('active');
+}
+
+function updateLightboxImage() {
+  lightboxImg.src = currentProjectImages[currentLightboxIndex];
+}
+
+function nextLightboxImage() {
+  currentLightboxIndex = (currentLightboxIndex + 1) % currentProjectImages.length;
+  updateLightboxImage();
+}
+
+function prevLightboxImage() {
+  currentLightboxIndex = (currentLightboxIndex - 1 + currentProjectImages.length) % currentProjectImages.length;
+  updateLightboxImage();
+}
+
+// Lightbox Event Listeners
+if (lightboxClose) lightboxClose.onclick = closeLightbox;
+if (lightboxNext) lightboxNext.onclick = nextLightboxImage;
+if (lightboxPrev) lightboxPrev.onclick = prevLightboxImage;
+
+// Close on background click
+if (lightbox) {
+  lightbox.onclick = (e) => {
+    if (e.target === lightbox) closeLightbox();
+  };
+}
+
 
 // Navigation Listeners
 document.getElementById('close-project-btn').addEventListener('click', closeProjectDetails);
