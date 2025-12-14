@@ -1,0 +1,64 @@
+[
+    {
+        "id": "project-1",
+        "title": "Assessly",
+        "label": "Vibeathon 2025",
+        "cardTag": [
+            "Top 20",
+            "Presented Product"
+        ],
+        "hasAchievement": true,
+        "shortDescription": "AI Co-Pilot for Smarter Grading.",
+        "fullDescription": "An intelligent grading system that automates the assessment of student worksheets using OCR, NLP, and AI-powered evaluation to provide accurate, consistent, and detailed feedback on student work.",
+        "thumbnail": "textures/polaris.png",
+        "gallery": [],
+        "techStack": [
+            "React",
+            "Docker",
+            "MongoDB",
+            "PaddleOCR",
+            "GPT-4"
+        ],
+        "link": "https://github.com/jvivard/assessly-1.0"
+    },
+    {
+        "id": "project-2",
+        "title": "InterVoice",
+        "label": "Anthropic + Accel Dev Day",
+        "cardTag": [
+            "Top 50"
+        ],
+        "hasAchievement": true,
+        "shortDescription": "An AI-powered assessment preparation platform",
+        "fullDescription": "Intervoice is an AI-powered assessment preparation platform that uses 6 specialized AI agents to help you ace job interviews.",
+        "thumbnail": "textures/accel.jpg",
+        "gallery": [],
+        "techStack": [
+            "Roadmapping",
+            "sprint planning",
+            "Workflow Streamlining",
+            ""
+        ],
+        "link": "https://github.com/jvivard/intervoice"
+    },
+    {
+        "id": "project-3",
+        "title": "Stellara",
+        "label": "Cardano Web3 Hackathon Asia Finale 2025",
+        "cardTag": [
+            "Finale"
+        ],
+        "hasAchievement": true,
+        "shortDescription": "AI content platform",
+        "fullDescription": "Stellara is a decentralized AI content platform built on Cardano. It allows users to subscribe to autonomous AI influencers using ADA.",
+        "thumbnail": "textures/cardano.jpg",
+        "gallery": [],
+        "techStack": [
+            "Roadmapping",
+            "sprint planning",
+            "Workflow Streamlining",
+            ""
+        ],
+        "link": "https://github.com/jvivard/Stellara"
+    }
+]
