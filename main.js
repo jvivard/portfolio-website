@@ -26,17 +26,8 @@ let clipNames = [
   'fan_rotation.003',
   'fan_rotation.004',
 ];
-let projects = [
-  {
-    image: 'textures/Alumini Connect.png',
-    url: 'https://github.com/jvivard', 
-  },
-  {
-    image: 'textures/Fact-Check.png',
-    url: 'https://github.com/jvivard/Factorizer', 
-  },
- 
-];
+let projects = [];
+let currentProjectIndex = 0;
 let aboutCameraPos = {
   x: 0.12,
   y: 0.2,
@@ -183,8 +174,8 @@ gltfLoader.load(
           'textures/vivardo.png'
         );
         bookTexture.flipY = false;
-        child.material = new THREE.MeshStandardMaterial({
-          color: 0xffffff,
+        // bookTexture.encoding = THREE.sRGBEncoding; // Reverted to Linear for brightness
+        child.material = new THREE.MeshBasicMaterial({
           map: bookTexture,
         });
       }
@@ -213,9 +204,18 @@ gltfLoader.load(
     // add event listeners
     logoListener();
     aboutMenuListener();
-    projectsMenuListener();
     init3DWorldClickListeners();
     initResponsive(room.scene);
+
+    // Fetch projects then initialize menu
+    fetch('data.json')
+      .then((response) => response.json())
+      .then((data) => {
+        projects = data;
+        projectsMenuListener();
+      })
+      .catch((error) => console.error('Error loading project data:', error));
+
   },
   function (error) {
     console.error(error);
@@ -327,7 +327,7 @@ function loadIntroText() {
       new THREE.MeshPhongMaterial({ color: 0xffffff }),
     ];
     const subTitleGeo = new TextGeometry(
-      'Web Developer / Automation Engineer / AI/ML Enthusiast',
+      'Product-Focused Builder / AI & Startups / Hackathon Experience',
       {
         font: font,
         size: 0.018,
@@ -597,27 +597,39 @@ function projectsMenuListener() {
   projects.forEach((project, i) => {
     const colIndex = i % 3 === 0 ? 0 : 1;
     const rowIndex = Math.floor(i / 3);
-    const geometry = new THREE.PlaneGeometry(0.71, 0.4);
+
+    // Vertical Geometry (Story Style) - Larger
+    // 0.75 width x 1.3 height
+    const geometry = new THREE.PlaneGeometry(0.75, 1.3);
+
+    // Create dynamic texture
+    const texture = createCardTexture(project);
+
     const material = new THREE.MeshBasicMaterial({
       color: 0xffffff,
-      map: new THREE.TextureLoader().load(project.image),
+      map: texture,
       transparent: true,
       opacity: 0.0,
     });
     const projectPlane = new THREE.Mesh(geometry, material);
     projectPlane.name = 'project';
     projectPlane.userData = {
-      url: project.url,
+      id: project.id,
+      index: i
     };
+
+    // Adjusted positioning to center cards vertically
+    // Moved down from 1.0 to 0.4
     projectPlane.position.set(
-      0.3 + i * 0.8 * colIndex,
-      1 - rowIndex * 0.5,
+      0.3 + i * 0.85 * colIndex, // Increased spacing for wider cards
+      0.4 - rowIndex * 0.6,      // Lower starting Y
       -1.15
     );
-    projectPlane.scale.set(0, 0, 0);
+    projectPlane.scale.set(0, 0, 0); // Start hidden
+
     // mesh & y vars needed for animation
     projects[i].mesh = projectPlane;
-    projects[i].y = 1 - rowIndex * 0.5;
+    projects[i].y = 0.4 - rowIndex * 0.6;
     scene.add(projectPlane);
   });
 
@@ -664,9 +676,14 @@ function init3DWorldClickListeners() {
     const newTheme = theme === 'light' ? 'dark' : 'light';
 
     // prevent about focus on button click which are positioned above book in mobile view
-    const closeBtn = document.getElementById('close-btn');
     const projectsBtn = document.getElementById('projects-menu');
+    const projectDetails = document.getElementById('project-details');
+    const closeBtn = document.getElementById('close-btn');
+
+    // Block 3D clicks if overlay is open or clicking on UI elements
     if (
+      projectDetails.classList.contains('active') ||
+      projectDetails.contains(e.target) ||
       e.target === closeBtn ||
       closeBtn.contains(e.target) ||
       e.target === projectsBtn ||
@@ -681,8 +698,7 @@ function init3DWorldClickListeners() {
     intersects = raycaster.intersectObjects(scene.children);
     intersects.forEach((intersect) => {
       if (intersect.object.name === 'project') {
-        intersect.object.userData.url &&
-          window.open(intersect.object.userData.url);
+        openProjectDetails(intersect.object.userData.index);
       }
 
       if (
@@ -702,6 +718,41 @@ function init3DWorldClickListeners() {
         switchTheme(theme);
       }
     });
+  });
+
+  // Mousemove Logic for Cursor
+  window.addEventListener('mousemove', function (e) {
+    const projectDetails = document.getElementById('project-details');
+
+    // Don't change cursor if overlay is active (let CSS handle it)
+    if (projectDetails.classList.contains('active')) {
+      document.body.style.cursor = 'default';
+      return;
+    }
+
+    mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mousePosition, camera);
+    intersects = raycaster.intersectObjects(scene.children);
+
+    let isHovering = false;
+    intersects.forEach((intersect) => {
+      if (
+        intersect.object.name === 'project' ||
+        intersect.object.name === 'Book' ||
+        intersect.object.name === 'Book001' ||
+        intersect.object.name === 'SwitchBoard' ||
+        intersect.object.name === 'Switch'
+      ) {
+        isHovering = true;
+      }
+    });
+
+    if (isHovering) {
+      document.body.style.cursor = 'pointer';
+    } else {
+      document.body.style.cursor = 'default';
+    }
   });
 }
 
@@ -774,3 +825,180 @@ window.addEventListener('resize', () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+// Project Wall Logic
+function openProjectDetails(index) {
+  currentProjectIndex = index;
+  updateProjectDetailsUI(currentProjectIndex);
+
+  const overlay = document.getElementById('project-details');
+  overlay.classList.add('active');
+
+  // Disable orbit controls when wall is open
+  disableOrbitControls();
+}
+
+function closeProjectDetails() {
+  const overlay = document.getElementById('project-details');
+  overlay.classList.remove('active');
+
+  // Reset camera view if needed or just re-enable controls
+  // For now, we keep the user in the "projects" view (zoomed in)
+  // relying on the existing "close-btn" to go back to room view
+  // enableOrbitControls(); 
+}
+
+function updateProjectDetailsUI(index) {
+  const project = projects[index];
+  if (!project) return;
+
+  document.getElementById('project-title').textContent = project.title;
+  document.getElementById('project-label').textContent = project.label || 'PROJECT';
+  document.getElementById('project-short-desc').textContent = project.shortDescription;
+  document.getElementById('project-full-desc').textContent = project.fullDescription;
+  document.getElementById('project-main-img').src = project.thumbnail;
+  document.getElementById('project-link').href = project.link;
+
+  // Tech Stack
+  const techContainer = document.getElementById('project-tech-stack');
+  techContainer.innerHTML = '';
+  project.techStack.forEach(tech => {
+    const span = document.createElement('span');
+    span.className = 'tech-tag';
+    span.textContent = tech;
+    techContainer.appendChild(span);
+  });
+}
+
+// Navigation Listeners
+document.getElementById('close-project-btn').addEventListener('click', closeProjectDetails);
+
+document.getElementById('next-project-btn').addEventListener('click', () => {
+  currentProjectIndex = (currentProjectIndex + 1) % projects.length;
+  updateProjectDetailsUI(currentProjectIndex);
+});
+
+// Reuse close-btn to also close project overlay if open
+document.getElementById('close-btn').addEventListener('click', () => {
+  closeProjectDetails();
+});
+
+// Helper to create dynamic card texture
+function createCardTexture(project) {
+  const canvas = document.createElement('canvas');
+  // Increase resolution by 3x for high-DPI sharpness
+  const scale = 3;
+  canvas.width = 750 * scale;
+  canvas.height = 1300 * scale;
+  const ctx = canvas.getContext('2d');
+  const radius = 40 * scale;
+
+  // 1. Clip for Rounded Corners
+  ctx.beginPath();
+  ctx.moveTo(radius, 0);
+  ctx.lineTo(canvas.width - radius, 0);
+  ctx.quadraticCurveTo(canvas.width, 0, canvas.width, radius);
+  ctx.lineTo(canvas.width, canvas.height - radius);
+  ctx.quadraticCurveTo(canvas.width, canvas.height, canvas.width - radius, canvas.height);
+  ctx.lineTo(radius, canvas.height);
+  ctx.quadraticCurveTo(0, canvas.height, 0, canvas.height - radius);
+  ctx.lineTo(0, radius);
+  ctx.quadraticCurveTo(0, 0, radius, 0);
+  ctx.closePath();
+  ctx.clip();
+
+  // 2. Background (White)
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // 3. Project Image (Top 75-80%)
+  const imgHeight = 1000 * scale;
+  const img = new Image();
+  img.src = project.thumbnail;
+  const texture = new THREE.CanvasTexture(canvas);
+
+  // Improve texture quality settings
+  texture.minFilter = THREE.LinearFilter; // Sharpens up close
+  texture.magFilter = THREE.LinearFilter;
+  texture.anisotropy = renderer.capabilities.getMaxAnisotropy(); // crisp at angles
+
+  img.onload = () => {
+    // Draw Image covering top area
+    ctx.drawImage(img, 0, 0, canvas.width, imgHeight);
+
+    // 4. Content Area (Bottom - White)
+
+    // 5. Text & UI Elements
+    const contentStartY = imgHeight + (60 * scale);
+    ctx.textAlign = 'left';
+
+    // Title
+    ctx.font = `400 ${65 * scale}px Chewy, Inter, "Helvetica Neue", Arial, sans-serif`;
+    ctx.fillStyle = '#6b4c3a';
+    ctx.fillText(project.title, 50 * scale, contentStartY);
+
+    // Short Description (Under Title)
+    if (project.shortDescription) {
+      ctx.font = `400 ${28 * scale}px Inter, Arial, sans-serif`;
+      ctx.fillStyle = '#555555'; // Dark grey
+      ctx.fillText(project.shortDescription, 50 * scale, contentStartY + (50 * scale));
+    }
+
+    // Tags (Pill Shapes) - Supports Array
+    if (project.cardTag) {
+      // Normalize to array
+      const tags = Array.isArray(project.cardTag) ? project.cardTag : [project.cardTag];
+
+      let currentX = 50 * scale;
+      const tagY = contentStartY + (85 * scale); // Shifted down for description
+
+      tags.forEach(tag => {
+        const tagText = tag.toUpperCase();
+        ctx.font = `bold ${24 * scale}px Inter, Arial, sans-serif`;
+        const textMetrics = ctx.measureText(tagText);
+        const padding = 20 * scale;
+        const tagWidth = textMetrics.width + padding * 2;
+        const tagHeight = 50 * scale;
+
+        // Draw Pill
+        ctx.fillStyle = '#f0f0f0'; // Light grey bg
+        ctx.beginPath();
+        ctx.roundRect(currentX, tagY, tagWidth, tagHeight, 25 * scale);
+        ctx.fill();
+
+        // Draw Text
+        ctx.fillStyle = '#333333';
+        ctx.fillText(tagText, currentX + padding, tagY + (34 * scale));
+
+        // Update X for next tag
+        currentX += tagWidth + (20 * scale);
+      });
+    }
+
+    // Achievement Symbol (Trophy/Star)
+    if (project.hasAchievement) {
+      const badgeSize = 80 * scale;
+      const badgeX = canvas.width - (50 * scale) - badgeSize;
+      const badgeY = contentStartY - (50 * scale); // Align with title
+
+      // Draw Circle Background
+      ctx.beginPath();
+      ctx.arc(badgeX + badgeSize / 2, badgeY + badgeSize / 2, badgeSize / 2, 0, Math.PI * 2);
+      ctx.fillStyle = '#FFD700';
+      ctx.fill();
+
+      // Draw Star Icon
+      ctx.font = `${40 * scale}px Arial`;
+      ctx.fillStyle = '#fff';
+      ctx.textAlign = 'center';
+      ctx.fillText('★', badgeX + badgeSize / 2, badgeY + badgeSize / 2 + (14 * scale));
+
+      // Reset align
+      ctx.textAlign = 'left';
+    }
+
+    texture.needsUpdate = true;
+  };
+
+  return texture;
+}
